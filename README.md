@@ -3,10 +3,10 @@
 LDTab for Python
 
 1. Project Setup
-    1. `git clone https://github.com/ckindermann/ldtab.py`
+    1. `git clone git@github.com:ckindermann/ldtab.py.git`
     2. `cd ldtab.py`
-    3. `git clone https://github.com/ontodev/wiring.rs`
-    4. `git clone https://github.com/ontodev/ldtab.rs`
+    3. `git clone git@github.com:ontodev/wiring.rs.git`
+    4. `git clone git@github.com:ontodev/ldtab.rs.git`
     5. `mv python_module.rs ldtab.rs/src/`
     6. add the line `mod python_module;` to the end of file `ldtab.rs/src/lib.rs`
     7. `mv Cargo.toml ldtab.rs` 
