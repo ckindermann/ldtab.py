@@ -62,6 +62,28 @@ def import_to_database(ontology_path, database_con):
     database_con.commit()
 
 
+def init(database_con):
+
+    # 1. create ldtab table
+    cur = database_con.cursor()
+    query = "CREATE TABLE IF NOT EXISTS ldtab (key TEXT PRIMARY KEY, value TEXT )"
+    cur.execute(query)
+
+    query = f"Insert INTO ldtab VALUES (?,?)"
+    cur.execute(query, ("ldtab version", "0.0.1"))
+    cur.execute(query, ("schema version", "0"))
+
+    # 2. create prefix table
+    query = "CREATE TABLE IF NOT EXISTS prefix (prefix TEXT PRIMARY KEY, base TEXT NOT NULL )"
+    cur.execute(query)
+
+    # 3. create statement table
+    query = "CREATE TABLE IF NOT EXISTS statement (assertion int NOT NULL, retraction int NOT NULL DEFAULT 0, graph TEXT NOT NULL, subject TEXT NOT NULL, predicate TEXT NOT NULL, object TEXT NOT NULL, datatype TEXT NOT NULL, annotation TEXT )"
+    cur.execute(query)
+
+    database_con.commit()
+
+
 # TODO: init, export, prefix
 
 if __name__ == "__main__":
@@ -69,5 +91,8 @@ if __name__ == "__main__":
     database = sys.argv[2]
     con = sqlite3.connect(database, check_same_thread=False)
     con.row_factory = dict_factory
+
+    init(con)
+
     # import_demo(ontology_path)
-    import_to_database(ontology_path, con)
+    # import_to_database(ontology_path, con)
