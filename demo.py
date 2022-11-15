@@ -84,7 +84,23 @@ def init(database_con):
     database_con.commit()
 
 
-# TODO: init, export, prefix
+def prefix(prefix_path, database_con):
+    cur = database_con.cursor()
+
+    file = open(prefix_path, "r")
+    next(file)  # skip header
+    for line in file:
+        cols = line.split("\t")
+        prefix = cols[0]
+        base = cols[1].rstrip()  # TODO: trimming whitespace here feels wrong
+        print(base)
+        query = f"Insert INTO prefix VALUES (?,?)"
+        cur.execute(query, (prefix, base))
+
+    database_con.commit()
+
+
+# TODO: export
 
 if __name__ == "__main__":
     ontology_path = sys.argv[1]
@@ -92,7 +108,9 @@ if __name__ == "__main__":
     con = sqlite3.connect(database, check_same_thread=False)
     con.row_factory = dict_factory
 
-    init(con)
+    prefix(ontology_path, con)
+
+    # init(con)
 
     # import_demo(ontology_path)
     # import_to_database(ontology_path, con)
