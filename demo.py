@@ -93,14 +93,55 @@ def prefix(prefix_path, database_con):
         cols = line.split("\t")
         prefix = cols[0]
         base = cols[1].rstrip()  # TODO: trimming whitespace here feels wrong
-        print(base)
+        # print(base)
         query = f"Insert INTO prefix VALUES (?,?)"
         cur.execute(query, (prefix, base))
 
     database_con.commit()
 
 
-# TODO: export
+def encode_annotation(string):
+    if string is None:
+        return ""
+    else:
+        return string
+
+
+# TODO: export to OWL/RDF: use wiring to translate LDTAB to OFN first
+def export_to_tsv(database_con, output_path):
+    cur = database_con.cursor()
+    output = open(output_path, "a")
+
+    query = f"SELECT * FROM statement"
+    for row in cur.execute(query):
+        assertion = str(row["assertion"])
+        retraction = str(row["retraction"])
+        graph = row["graph"]
+        subject = row["subject"]
+        predicate = row["predicate"]
+        object = row["object"]
+        datatype = row["datatype"]
+        annotation = row["annotation"]
+        tsv = (
+            assertion
+            + "\t"
+            + retraction
+            + "\t"
+            + graph
+            + "\t"
+            + subject
+            + "\t"
+            + predicate
+            + "\t"
+            + object
+            + "\t"
+            + datatype
+            + "\t"
+            + encode_annotation(annotation)
+            + "\n"
+        )
+        output.write(tsv)
+
 
 if __name__ == "__main__":
     ontology_path = sys.argv[1]
@@ -108,7 +149,9 @@ if __name__ == "__main__":
     con = sqlite3.connect(database, check_same_thread=False)
     con.row_factory = dict_factory
 
-    prefix(ontology_path, con)
+    export_to_tsv(con, "ddd.tsv")
+
+    # prefix(ontology_path, con)
 
     # init(con)
 
